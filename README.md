@@ -1,12 +1,14 @@
 # physical-computing
 
 Practice Codes for 'Physical Computing', Faculty of Human Informatics, Aichi Shukutoku University.
+
 by Mitsuteru Kokubun
 
 愛知淑徳大学人間情報学部「フィジカルコンピューティング演習」の演習用コード
+
 國分 三輝
 
-※ 本リポジトリ内のソースコードは本学の演習室・仕様端末・ネットワーク環境等で動作を確認していますが、それ以外での動作は保証しかねます。
+※ 本リポジトリ内のコードは本学の演習室・端末・ネットワーク環境等でのみ動作を確認しています。
 
 ---
 
