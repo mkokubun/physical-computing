@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>3.7s 音声認識</title>
+    </head>
+    <body>
+        <div id='msg'>ここに認識結果を表示</div>
+        <script>
+            const msg = document.getElementById('msg');
+            // 音声認識の設定
+            const recog = new webkitSpeechRecognition();
+            recog.lang = 'ja-JP';	// 日本語として認識
+            // イベント設定
+			recog.addEventListener('soundstart', onStart);	// 認識開始
+			recog.addEventListener('nomatch', onNoMatch);	// 認識失敗
+			recog.addEventListener('result', onResult);		// 認識完了
+            // 認識を開始した時の関数
+            function onStart() {
+                msg.innerHTML = '認識中...';
+            }
+            // 認識できなかった時の関数
+            function onNoMatch() {
+                msg.innerHTML = '認識できません';
+            }
+            // 認識を完了した時の関数
+            function onResult(event) {
+                msg.innerHTML = event.results[0][0].transcript;
+            }
+            // 音声認識開始
+            recog.start();
+        </script>
+    </body>
+</html>
