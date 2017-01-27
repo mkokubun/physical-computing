@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>3.7 音声合成アプリ</title>
+        <style>
+            /* テキストボックスの文字サイズを大きくする */
+            #txt {  font-family: sans-serif;
+                    font-size: 24px;}
+        </style>
+    </head>
+    <body>
+        <input type='text' value='こんにちは' id='txt'>
+        <img src='image.jpg' id='img'>
+
+        <script>
+            // Web Speech Synthesis API を使う設定
+            const msg = new SpeechSynthesisUtterance();
+            msg.lang = 'ja-JP';     // 日本語に設定（英語はen-US）
+            msg.volume = 1.0;       // 音量設定（0～1）
+            msg.pitch = 1.5;        // ピッチ設定（0～2）
+
+            // 画像をクリックしたら話す（関数speakを実行）
+            const img = document.getElementById('img');
+            img.addEventListener('click', speak);
+            // 話す関数speak
+            function speak() {
+                txt = document.getElementById('txt');
+                msg.text = txt.value;   // テキストボックスの文章を設定
+                window.speechSynthesis.speak(msg);  // 実際に話させる命令
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>8.3a スマホでセンシング（光）</title>
+    </head>
+
+    <body>
+        <div id='val'>ここに測定値を表示</div>
+
+        <!-- 双方向通信（socket通信）のためのsocket.ioライブラリの読み込み -->
+        <script src='/socket.io/socket.io.js'></script>
+
+        <script>
+
+            const socket = io();    // 双方向通信用のサーバに接続
+
+            socket.on('sensor', function(data) {    // 'sensor'というイベントが来たら
+                const val = document.getElementById('val'); // div要素の取得
+                val.innerHTML = data.brightness;            // データの表示
+            });
+        </script>
+    </body>
+</html>

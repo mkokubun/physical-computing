@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>3.3 写真を撮る・見る</title>
+        <style>
+            #canvas {
+                /* Canvasに枠をつけるCSS */
+                border: solid 1px #000000;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ファイル選択ダイアログを使う<input>、カメラアプリも同時に使える -->
+        <input type='file' accept='image/*' id='fileChooser'>
+        <!-- Canvas（お絵描きセット）を置く -->
+        <canvas width='300' height='400' id='canvas'></canvas>
+
+        <script>
+            // Canvasを使うためのお決まりの2行
+            const canvas = document.getElementById('canvas');	// お絵描きセットを得て
+            const context = canvas.getContext('2d');			// その筆を得る
+
+            const fileChooser = document.getElementById('fileChooser');
+            const fileReader = new FileReader();  // ファイルを読むFileReader()オブジェクト
+            const img = new Image();              // 画像を入れるImage()オブジェクト
+            // イベント：ファイル選択ダイアログが変化したらreadImageを実行
+            fileChooser.addEventListener('change', readImage);
+            // イベント：fileReaderがファイル読み込みを完了したらloadImageを実行
+            fileReader.addEventListener('load', loadImage);
+            // イベント：imgに画像がロードできたらdrawImageを実行
+            img.addEventListener('load', drawImage);
+            // 画像を読み込むreadImage関数
+            function readImage() {
+                const file = fileChooser.files[0];
+                fileReader.readAsDataURL(file);	// ファイルをURL形式で読む
+            }
+            // Imageオブジェクトのsrcに画像を入れるloadImage関数
+            function loadImage() {
+                img.src = fileReader.result;    // fileReaderのresultに画像が入っている
+            }
+            // Canvasに画像を置くdrawImage関数
+            function drawImage() {
+                context.drawImage(img, 0, 0, 300, 400); // (Image,X,Y,W,H)
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.2b ジャイロでパノラマVR</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+        <canvas width='300' height='400' id='canvas'></canvas>
+
+        <script>
+            // シャイロセンサの値を得る deviceorientation イベント
+            window.addEventListener('deviceorientation', getData);
+            function getData(event) {
+                // 回転角度 [degree]
+                // スマホは斜め45度くらい倒して持つ
+                const alpha = event.alpha;    // 左右に傾ける回転
+                const beta = event.beta;      // 前後に倒す回転
+                const gamma = event.gamma;    // 左右に回る回転
+                const msg = document.getElementById('msg');   // データを表示
+                msg.innerHTML = 'a: ' + alpha + '<BR>' +
+                                'b: ' + beta + '<BR>' +
+                                'g: ' + gamma;
+                moveImage(alpha);           // 写真を動かす（alphaのみ利用）
+            }
+
+            // パノラマ写真を読み込んでcanvasに置く
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const img = new Image();          // Imageオブジェクトを宣言
+            img.src = 'norikura.jpg';       // パノラマ写真を指定
+            img.addEventListener('load', drawImage);    // 読み込めたら
+            function drawImage() {          // canvasに写真を置く
+                // 画像の L550,T0,W300,H400 を表示（写真の中央付近）
+                context.drawImage(img, 550, 0, 300, 400);
+            }
+
+            // 写真を左右に動かす
+            function moveImage(alpha) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                const pan = alpha - 180; // 0～360度のalpha値を-180～180度に変換
+                // 写真の表示位置を左右にずらす
+                // 左右90度ずつで写真の端から端まで見えるように係数を6に調整
+                context.drawImage(img, 550-6*pan, 0, 300, 400, 
+                                        0, 0, 300, 400);
+            }
+        </script>
+    </body>
+</html>

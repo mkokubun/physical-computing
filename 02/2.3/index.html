@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>2.3 時計アプリ</title>
+        <style>
+            #time {
+                font-family: arial, sans-serif;
+                font-size: 72px;
+            }
+            #date {
+                font-family: arial, sans-serif;
+                font-size: 42px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 時刻と日付を表示するdiv要素 -->
+        <div id='time'>--:--:--</div>
+        <div id='date'>----/--/-- ---</div>
+        <script>
+            // 時計を表示する関数drawClockの定義
+            function drawClock() {
+                const now = new Date(); // 現在のシステム日時を取得して変数nowに入れる
+                // 時刻を表示
+                const hour = now.getHours();    // 時（Hours）を取得してhourに入れる
+                const min = now.getMinutes();   // 分（Minutes）を取得してminに入れる
+                const sec = now.getSeconds();   // ら秒（Seconds）を取得してsecに入れる
+                const time = document.getElementById('time');
+                time.innerHTML = hour + ':' + min + ':' + sec;
+                // 日付を表示
+                const year = now.getFullYear(); // 年（FullYear）を取得してyearに
+                const mon = now.getMonth() + 1 ;    // 月（Month）を取得してmonに
+                const day = now.getDate();      // 日（Date）を取得してdayに
+                const dayNo = now.getDay();     // 日番号（Day、日0～土6）をdayNoに
+                // 曜日名の配列を定義
+                const dayArray = new Array('日', '月', '火', '水', '木', '金', '土');
+                const dayName = dayArray[dayNo];    // 日番号から曜日名を決める
+                const date = document.getElementById('date');
+                date.innerHTML = year + '/' + mon + '/' + day + ' ' + dayName;
+            }
+            // 関数drawClockを実行（最初に1回）
+            drawClock();
+            // 一定間隔で関数を繰り返して実行するsetIntervalを実行
+            window.setInterval(drawClock, 1000);   // (関数, 実行間隔[ミリ秒])
+        </script>
+    </body>
+</html>

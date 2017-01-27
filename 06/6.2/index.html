@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>6.2 おしゃべりなチャット（Chrome限）</title>
+    </head>
+
+    <body>
+        <input type='text' id='txt'>                <!-- テキストボックス -->
+        <input type='button' id='btn' value='送信'>  <!-- 送信ボタン -->
+        <div id='msgArea'></div>                    <!-- メッセージの表示エリア -->
+
+        <script src='/socket.io/socket.io.js'></script> <!-- socket.ioの読み込み -->
+
+        <script>
+
+            const socket = io();            // 双方向通信用のサーバに接続
+
+            // サーバへのデータ送信
+            const btn = document.getElementById('btn');   // ボタンを取得
+            btn.addEventListener('click', sendData);    // clickでsendDataを実行
+            function sendData() {           // データの送信処理
+                const txt = document.getElementById('txt');   // テキストボックスを取得
+                if (txt.value == '') {      // テキストボックスが空なら
+                    return;                 // 何もしないで抜ける
+                }
+                const data = {              // 送信するデータオブジェクトを作る
+                    text: txt.value         // textというプロパティにテキストを入れる
+                };
+                socket.emit('all', data);   // 'all'というイベントでdataを送信
+                txt.value = '';             // テキストボックスを空にする
+            }
+
+            // サーバからのデータ受信
+            socket.on('msg', function(data) {   // 'msg'というイベントのsocketが来たら
+                receiveData(data);              // receiveDataを実行
+            });
+            function receiveData(data) {        // データの受信処理
+                const newMsg = document.createElement('div'); // 新規メッセージ要素作成
+                newMsg.innerHTML = data.text;   // newMsgにdataのtextプロパティを入れる
+                const msgArea = document.getElementById('msgArea');   // 表示エリアを取得
+                msgArea.appendChild(newMsg);    // 表示エリアに子要素としてnewMsgを追加
+                const speech = new SpeechSynthesisUtterance();  // 音声合成オブジェクト
+                speech.lang = 'Ja-JP';                  // 言語を日本語に設定
+                speech.text = data.text;                // 話す文字列の設定
+                window.speechSynthesis.speak(speech);   // 音声合成の実行
+            }
+
+        </script>
+    </body>
+</html>

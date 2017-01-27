@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>6.4 画像付きチャット</title>
+    </head>
+
+    <body>
+        <input type='text' id='txt'>                <!-- テキストボックス -->
+        <input type='file' accept='image/*' id='imgChooser'>    <!-- 画像選択 -->
+        <canvas width='64' height='64' id='img'></canvas>   <!-- 画像を置くcanvas -->
+        <input type='button' id='btn' value='送信'>  <!-- 送信ボタン -->
+        <div id='msgArea'></div>                    <!-- メッセージの表示エリア -->
+
+        <script src='/socket.io/socket.io.js'></script> <!-- socket.ioの読み込み -->
+
+        <script>
+
+            const socket = io();            // 双方向通信用のサーバに接続
+
+            // 画像を扱うためにCanvasを利用（3.1を参照）
+            const canvas = document.getElementById('img');
+            const context = canvas.getContext('2d');
+            // 画像の選択とcanvasへの読み込み（3.3を参照）
+            const imgChooser = document.getElementById('imgChooser');
+            const fileReader = new FileReader();
+            const img = new Image();
+            // 画像を選ぶ・撮る
+            imgChooser.addEventListener('change', readImage);
+            function readImage() {
+                const file = imgChooser.files[0];
+                fileReader.readAsDataURL(file);
+            }
+            // 画像を読み込む
+            fileReader.addEventListener('load', loadImage);
+            function loadImage() {
+                img.src = fileReader.result;
+            }
+            // 読み込んだ画像をcanvasに表示する
+            img.addEventListener('load', drawImage);
+            function drawImage() {
+                context.drawImage(img, 0, 0, 64, 64);
+            }
+
+            // サーバへのデータ送信
+            const btn = document.getElementById('btn');   // ボタンを取得
+            btn.addEventListener('click', sendData);    // clickでsendDataを実行
+            function sendData() {           // データの送信処理
+                const txt = document.getElementById('txt');   // テキストボックスを取得
+                if (txt.value == '') {      // テキストボックスが空なら
+                    return;                 // 何もしないで抜ける
+                }
+                const data = {                // 送信するデータオブジェクトを作る
+                    text: txt.value,          // textというプロパティにテキストを入れる
+                    pict: canvas.toDataURL()  // pictというプロパティに画像を入れる
+                };
+                socket.emit('all', data);   // 'all'というイベントでdata送信
+                txt.value = '';             // テキストボックスを空にする
+            }
+
+            // サーバからのデータ受信
+            socket.on('msg', function(data) {   // 'msg'というイベント名のsocketが来たら
+                receiveData(data);              // receiveDataを実行
+            });
+            function receiveData(data) {        // データの受信処理
+                const newMsg = document.createElement('div'); // 新規メッセージ要素の作成
+                newMsg.innerHTML = data.text;   // newMsgにdataのtextプロパティを入れる
+                const msgArea = document.getElementById('msgArea');   // 表示エリアを取得
+                msgArea.appendChild(newMsg);    // 表示エリアに子要素としてnewMsgを追加
+                const newImg = document.createElement('img'); // 画像表示用img要素の作成
+                newImg.width = 64;                          // 画像の幅
+                newImg.height = 64;                         // 画像の高さ
+                newMsg.appendChild(newImg);     // newMsgの子要素としてnewImgを追加
+                newImg.src = data.pict;                     // imgのsrcに画像を設定
+            }
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>3.2 タッチでお絵かき</title>
+        <style>
+            #canvas {
+                /* Canvasに枠をつけるCSS */
+                border: solid 1px #000000;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Canvas（画用紙・お絵かきセット）を置く -->
+        <canvas width='300' height='400' id='canvas'></canvas>
+        <script>
+            // Canvasを使うためのお決まりの2行
+            const canvas = document.getElementById('canvas');	// お絵かきセットを得て
+            const context = canvas.getContext('2d');			// その筆を得る
+            // タッチで描くための3個のイベント（開始、描画、終了）
+            canvas.addEventListener('touchstart', drawStart);   // タッチ開始
+            canvas.addEventListener('touchmove', draw);         // タッチ中の動き
+            canvas.addEventListener('touchend', drawEnd);       // タッチ終了
+            // 各種変数の宣言
+            let touching = false;       // タッチ中か否かの変数
+            let startX = 0;             // 描画開始のX座標
+            let startY = 0;             // 描画開始のY座標
+            const penColor = '#000000';   // 筆の色
+            const penWidth = 5;           // 筆の太さ
+            // 描画開始の関数drawStart
+            function drawStart(event) {
+                touching = true;
+                // 指が触れた座標（開始座標）を得る
+                startX = event.touches[0].pageX - canvas.offsetLeft;
+                startY = event.touches[0].pageY - canvas.offsetTop;
+            }
+            // 描画の関数draw
+            function draw(event) {
+                event.preventDefault();     // 画面をスクロールさせないようにする
+                if (touching == true) {     // タッチ中なら描画
+                    // 指が動いた後の座標（終了座標）を得る
+                    const endX = event.touches[0].pageX - canvas.offsetLeft;
+                    const endY = event.touches[0].pageY - canvas.offsetTop;
+                    // 開始座標から終了座標に向かって線を引く
+                    context.beginPath();
+                    context.moveTo(startX, startY); // 開始座標から
+                    context.lineTo(endX, endY);     // 終了座標へ
+                    context.strokeStyle = penColor; // 筆の色
+                    context.lineWidth = penWidth;   // 筆の太さ
+                    context.lineCap = 'round';      // 線の端を丸める
+                    context.stroke();               // 線を引く
+                    // 今の終了座標を次の開始座標にする
+                    startX = endX;
+                    startY = endY;
+                }
+            }
+            // 描画終了の関数drawEnd
+            function drawEnd(event) {
+                touching = false;
+            }
+        </script>
+    </body>
+</html>

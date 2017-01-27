@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.3a 照度センサ（Firefox限）</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+
+        <script>
+            // 照度センサの値を得る devicelight イベント
+            // Firefoxのみ対応（Chromeでは動かない）
+            window.addEventListener('devicelight', getData);
+            function getData(event) {
+                const lux = event.value;  // 照度 [lux]
+                const msg = document.getElementById('msg');   // データを表示
+                msg.innerHTML = lux + ' lux';
+            }
+        </script>
+    </body>
+</html>

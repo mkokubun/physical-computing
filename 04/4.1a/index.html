@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.1a 加速度センサ</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+
+		<script>
+            // 加速度センサの値を得る devicemotion イベント
+            window.addEventListener('devicemotion', getData);
+            function getData(event) {
+                // 重力加速度 accelerationIncludingGravity [m/s^2]
+                // 地球の重力（1G）は約 9.8 m/s^2
+                const accX = event.accelerationIncludingGravity.x; // 左右
+                const accY = event.accelerationIncludingGravity.y; // 上下
+                const accZ = event.accelerationIncludingGravity.z; // 表裏
+                const msg = document.getElementById('msg');   // データ表示
+                msg.innerHTML = 'X: ' + accX + '<BR>' +
+                                'Y: ' + accY + '<BR>' +
+                                'Z: ' + accZ;
+            }
+        </script>
+    </body>
+</html>

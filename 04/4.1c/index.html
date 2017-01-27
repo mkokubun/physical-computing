@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.1c ゆらゆらゲーム</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+        <canvas width='300' height='300' id='canvas'></canvas>
+
+        <script>
+            // 加速度センサの値を得る devicemotion イベント
+            window.addEventListener('devicemotion', getData);
+            function getData(event) {
+                // 重力加速度 accelerationIncludingGravity [m/s^2]
+                // 地球の重力（1G）は約 9.8 m/s^2
+                const accX = event.accelerationIncludingGravity.x; // 左右
+                const accY = event.accelerationIncludingGravity.y; // 下上
+                const accZ = event.accelerationIncludingGravity.z; // 裏表
+                const msg = document.getElementById('msg');	// データ表示
+                msg.innerHTML = 'X: ' + accX + '<BR>' +
+                                'Y: ' + accY + '<BR>' +
+                                'Z: ' + accZ;
+                drawBall(accX, accY, accZ);     // ボールを描く
+                alertVibration(accX, accY, 3);	// 閾値（ここでは3）以上なら震わせる
+            }
+
+            // ボール（円）をcanvasに描く（ スマホの自動回転を切っておくとよい）
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const cX = canvas.width / 2;	// canvasの中心のX座標
+            const cY = canvas.height / 2;	// canvasの中心のY座標
+            const baseR = 50;				// Zが1Gの時のボールの半径
+            // canvasにボール（円）を描く関数drawBall
+            function drawBall(x, y, z) {
+                // canvasの内容を消すclearRect()
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                // 円を描く（arcの各引数の係数(15や3など)は現物合わせのテキトー）
+                context.beginPath();
+                context.arc(cX-x*15, cY+y*15, baseR-z*3, 0, 2*Math.PI);
+                context.fillStyle = '#000000';
+                context.fill();
+            }
+
+			// 震わせる（バイブレータを振動させる）
+            function alertVibration(x, y, threshold) {
+                // 加速度のスカラーを求める（三平方の定理）
+                const scalar = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+                if (scalar > threshold) {   // スカラーが閾値より大きい時
+                    navigator.vibrate(100); // バイブレータを100ms振動
+                }
+                // threshold（閾値）の円を描く
+                context.beginPath();
+                context.arc(cX, cY, threshold*15, 0, 2*Math.PI);
+                context.strokeStyle = '#FF0000';
+                context.stroke();
+            }
+        </script>
+    </body>
+</html>

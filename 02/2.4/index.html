@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>2.4 世界時計</title>
+        <style>
+            #time {
+                font-family: arial, sans-serif;
+                font-size: 72px;
+            }
+            #date {
+                font-family: arial, sans-serif;
+                font-size: 42px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 世界地図を表示するimg要素 -->
+        <img src='tokyo.png' id='map'>
+        <!-- 時刻と日付を表示するdiv要素 -->
+        <div id='time'>--:--:--</div>
+        <div id='date'>----/--/-- ---</div>
+        <!-- 都市を選択するプルダウンリスト -->
+        <select id='city'>
+            <option value='-10'>ホノルル （アメリカ）</option>
+            <option value='-8'>ロサンゼルス （アメリカ）</option>
+            <option value='-5'>ニューヨーク （アメリカ）</option>
+            <option value='-3'>サンパウロ （ブラジル）</option>
+            <option value='0'>ロンドン （イギリス）</option>
+            <option value='3'>モスクワ （ロシア）</option>
+            <option value='5.5'>ニューデリー （インド）</option>
+            <option value='8'>北京 （中国）</option>
+            <option value='9' selected>東京 （日本）</option>
+            <option value='10'>シドニー （オーストラリア）</option>
+        </select>
+        <script>            
+            // 時計を表示する関数drawClockの定義
+            function drawClock() {
+                // 現在のシステム日時情報（Date）を取得して変数nowに入れる
+                let now = new Date();
+                // UTC時刻（協定世界時）を求める
+                const offset = now.getTimezoneOffset();     // UTC時刻との時差（分単位）
+                const offsetMs = offset * 60 * 1000;        // 時差をミリ秒単位に変換
+                const UTC = now.getTime() + offsetMs        // UTC時刻（ミリ秒単位）
+                // 選択された都市の時差を求める
+                const city = document.getElementById('city');
+                const cityNo = city.selectedIndex;          // 選択されている番号を調べる
+                const cityOffset = city.options[cityNo].value;  // その都市の時差を得る
+                const cityOffsetMs = cityOffset * 60 * 60 * 1000; // 時差をミリ秒に変換
+                // UTC時刻とその都市の時差から、その都市の現在時刻を求める
+                const cityTime = UTC + cityOffsetMs;            // 選択された都市の時刻
+                // 選択された都市の日時情報を取得して変数nowに入れる
+                now = new Date(cityTime);
+                // 時刻を表示
+                const hour = now.getHours();    // 時（Hours）を取得してhourに入れる
+                const min = now.getMinutes();   // 分（Minutes）を取得してminに入れる
+                const sec = now.getSeconds();   // 秒（Seconds）を取得してsecに入れる
+                const time = document.getElementById('time');
+                time.innerHTML = hour + ':' + min + ':' + sec;
+                // 日付を表示
+                const year = now.getFullYear(); // 年（FullYear）を取得してyearに
+                const mon = now.getMonth() + 1; // 月（Month）を取得してmonに
+                const day = now.getDate();      // 日（Date）を取得してdayに入れる
+                const dayNo = now.getDay();     // 日番号（Day、日が0～土が6）を取得してdayNoに
+                // 曜日名の配列を定義
+                const dayArray = new Array('日', '月', '火', '水', '木', '金', '土');
+                const dayName = dayArray[dayNo];    // 日番号から曜日名を決める
+                const date = document.getElementById('date');
+                date.innerHTML = year + '/' + mon + '/' + day + ' ' + dayName;
+                // 地図の表示
+                const map = document.getElementById('map');
+                const mapFile = new Array('honolulu.png', 'losangeles.png', 'newyork.png', 'saopaulo.png', 'london.png', 'moscow.png', 'newdelhi.png', 'beijing.png', 'tokyo.png', 'sydney.png'); // 画像ファイル名の配列を定義
+                map.src = mapFile[cityNo];  // mapのsrcに選択された都市の画像ファイルを設定
+            }
+            // 関数drawClockを実行（起動時に1回）
+            drawClock();
+            // 一定間隔で関数を繰り返して実行するsetIntervalを実行
+            window.setInterval(drawClock, 1000);   // (関数, 実行間隔[ミリ秒])
+        </script>
+    </body>
+</html>

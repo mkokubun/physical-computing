@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>3.1 Canvasに描画</title>
+        <style>
+            #canvas {
+                /* Canvasに枠をつけるCSS */
+                border: solid 1px #000000;
+            }
+        </style>
+    </head>
+    <body>
+		<!-- Canvas（画用紙・お絵かきセット）を置く -->
+        <canvas width='300' height='400' id='canvas'></canvas>
+
+        <script>
+            // Canvasを使うためのお決まりの2行
+            const canvas = document.getElementById('canvas');   // お絵描きセットを得て
+            const context = canvas.getContext('2d');            // その筆を得る
+
+            // Canvasに線を描く
+            context.beginPath();					// 描き始める
+            context.moveTo(10, 10);					// 筆の初期位置
+            context.lineTo(290, 390);				// 筆を動かす
+            context.strokeStyle = '#FF0000';		// 筆の色
+            context.lineWidth = 2;					// 筆の太さ
+            context.stroke();						// 線を描く
+
+            // Canvasに四角を描く（線だけ）
+            context.beginPath();					// 描き始める
+            context.strokeStyle = '#00FF00';		// 筆の色
+            context.lineWidth = 5;					// 線の太さ
+            context.strokeRect(150, 30, 100, 150);	// 矩形(Left,Top,Width,Height)	
+
+            // Canvasに円（弧）を描く（塗りつぶし）
+            context.beginPath();					// 描き始める
+            context.arc(100, 250, 60, 0, 2*Math.PI);	// 円弧(X,Y,半径,開始角,終了角)
+            context.fillStyle = '#0000FF';			// 塗りつぶしの色
+            context.fill();							// 塗りつぶす
+
+            // 文字を描く（塗りつぶし）
+            context.fillStyle = '#FFA500';			// 塗りつぶしの色
+            context.font = 'italic 60px sans-serif';	// 装飾、サイズ、書体
+            context.fillText('Hello!', 50, 360);	// fillText(text,X,Y)
+        </script>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>8.2b スマホでサーボ</title>
+    </head>
+
+    <body>
+        <div id='val'>ここに角度を表示</div>
+        <!-- サーボ制御スライダー -->
+        <input type='range' min='0' max='179' value='90' id='angle'>
+
+        <!-- 双方向通信（socket通信）のためのsocket.ioライブラリの読み込み -->
+        <script src='/socket.io/socket.io.js'></script>
+
+        <script>
+
+            const socket = io();    // 双方向通信用のサーバに接続
+
+            const slider = document.getElementById('angle');    // スライダーを取得
+            slider.addEventListener('change', ctrlServo);       // スライダーのイベント
+            function ctrlServo() {              // スライダーが変化した時の処理
+                const val = document.getElementById('val');     // div要素を取得
+                val.innerHTML = slider.value;                   // 角度の表示
+                socket.emit('servo',            // servoというイベント名で
+                    {
+                        angle: slider.value     // angle属性に角度を入れて送信
+                    }
+                );
+            }
+        </script>
+    </body>
+</html>

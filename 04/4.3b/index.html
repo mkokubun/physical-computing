@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.3b 明るさチェッカー（Firefox限）</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+        <img src='' id='brightness'>
+
+        <script>
+            // 照度センサの値を得る devicelight イベント
+            // Firefoxのみ対応（Chromeでは動かない）
+            window.addEventListener('devicelight', getData);
+            function getData(event) {
+                const lux = event.value;  // 照度 [lux]
+                const msg = document.getElementById('msg');   // データを表示
+                msg.innerHTML = lux + ' lux';
+                showBrightness(lux);    // 明るさを絵で示す
+            }
+
+            // 明るさを絵で示す
+            const img = document.getElementById('brightness');
+			// 3.3b素材.zip から3個の画像を入れておく
+            const imgName = new Array('moon.jpg', 'sunset.jpg', 'sunny.jpg');
+            function showBrightness(lux) {
+                if(lux <= 100) {                        // 100lx以下なら
+                    img.src = imgName[0];                   // 月の絵
+                } else if (lux > 100 && lux <=1000) {   // 100<lux<=1000
+                    img.src = imgName[1];                   // 夕暮れの絵
+                } else {                                // それ以外（lux>1000）
+                    img.src = imgName[2];                   // 太陽の絵
+                }
+            }
+        </script>
+    </body>
+</html>

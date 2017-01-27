@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>6.5 Face to Face（Firefox限）</title>
+    </head>
+
+    <body>
+        <!-- 自分のカメラ映像を表示するvideo要素（3.6を参照） -->
+        <video width='144' height='192' autoplay id='video'></video>
+        <!-- 自分のカメラ映像をキャプチャするcanvas要素（非表示にしておく） -->
+        <canvas width='144' height='192' hidden='true' id='local'></canvas>
+        <!-- 相手のカメラ映像を表示するimg要素 -->
+        <img width='144' height='192' id='remote'>
+
+        <!-- 双方向通信（socket通信）のためのライブラリの読み込み（定型） -->
+        <script src='/socket.io/socket.io.js'></script>
+
+        <script>
+
+            const socket = io();            // 双方向通信用のサーバに接続
+
+            //カメラを使う（3.6を参照）
+            const media = navigator.mediaDevices.getUserMedia({
+                    video: true,    // カメラを使うか否か
+                    audio: false    // マイクを使うか否か
+            });
+            // メディアストリームの取得に成功したらonSuccess、失敗したらonErrorを実行
+            media.then(onSuccess, onError);
+            const video = document.getElementById('video');   // video要素を取得
+            // 成功時のonSuccess関数
+            function onSuccess(stream) {    // カメラ映像はstreamに入ってくる
+                // video要素のsrcに、streamをURL形式にしたものを入れる
+                video.src = window.URL.createObjectURL(stream);
+                video.addEventListener('timeupdate', sendData);  // 更新時sendData実行
+            }
+            // エラー時のonError関数
+            function onError(error) {       // エラー内容がerrorに入ってくる
+                window.alert(error);        // 警告ダイアログにerrorを表示
+            }
+
+            // サーバへのデータ送信
+            function sendData() {
+                // 画像をcanvasにキャプチャ（3.6を参照）
+                const canvas = document.getElementById('local');
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, 144, 192);
+                const data = {                  // 送信するデータオブジェクトを作る
+                    pict: canvas.toDataURL()    // pictというプロパティに画像を入れる
+                };
+                socket.emit('others', data);    // 'others'というイベント名でdataを送信
+            }
+
+            // サーバからのデータ受信
+            socket.on('msg', function(data) {   // 'msg'というイベント名のsocketが来たら
+                receiveData(data);              // receiveDataを実行
+            });
+            function receiveData(data) {        // データの受信処理
+                const remote = document.getElementById('remote'); // 表示するimg要素を取得
+                remote.src = data.pict;                         // src属性に画像を設定
+            }
+
+        </script>
+    </body>
+</html>

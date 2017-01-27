@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.2a ジャイロセンサ</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+
+        <script>
+            // シャイロセンサの値を得る deviceorientation イベント
+            window.addEventListener('deviceorientation', getData);
+            function getData(event) {
+                // 回転角度 [degree]
+                // スマホは斜め45度くらい倒して持つ
+                const alpha = event.alpha;    // 左右に傾ける回転
+                const beta = event.beta;      // 前後に倒す回転
+                const gamma = event.gamma;    // 左右に回る回転
+                const msg = document.getElementById('msg');   // データを表示
+                msg.innerHTML = 'a: ' + alpha + '<BR>' +
+                                'b: ' + beta + '<BR>' +
+                                'g: ' + gamma;
+            }
+        </script>
+    </body>
+</html>

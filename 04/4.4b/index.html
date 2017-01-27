@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.4b 盗難防止アラーム（Firefox限）</title>
+		<style>
+			#img {visibility: hidden;}
+		</style>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+        <!-- 3.4b素材.zip 内の音声ファイルと画像ファイルを指定 -->
+        <audio src='tasukete.mp3' id='snd'></audio>
+		<img src='tasukete.png' id='img'>
+
+        <script>
+            // 近接センサの値を得る deviceproximity イベント
+            // Firefoxのみ対応（Chromeでは動かない）
+            window.addEventListener('deviceproximity', getData);
+            function getData(event) {
+                const prox = event.value;		// 距離 [近い=0 / 遠い=1]
+                const msg = document.getElementById('msg');   // データ表示
+                msg.innerHTML = prox;
+                alarm(prox);	// アラームを鳴らす
+            }
+
+            // アラームを鳴らす
+            const snd = document.getElementById('snd');
+			const img = document.getElementById('img');
+            function alarm(prox) {
+                if(prox == 0) {						// 距離が0（近い）なら
+                    snd.play();							// 音声を再生
+					img.style.visibility = 'visible';	// 画像を表示
+					window.setTimeout(hideImg, 3500);	// 一定時間後に画像隠す
+				}
+            }
+			// 画像を隠す
+			function hideImg() {
+				img.style.visibility = 'hidden';
+			}
+        </script>
+    </body>
+</html>

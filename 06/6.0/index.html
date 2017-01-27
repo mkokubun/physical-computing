@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>6.1 シンプルなチャット</title>
+    </head>
+
+    <body>
+        <!-- テキストボックス -->
+        <input type='text' id='txt'>
+        <!-- 送信ボタン -->
+        <input type='button' id='btn' value='送信'>
+        <!-- 受信メッセージの表示エリアとしてのdiv要素 -->
+        <div id='msgArea'></div>
+
+        <!-- 双方向通信（socket通信）のためのライブラリの読み込み（定型） -->
+        <script src='/socket.io/socket.io.js'></script>
+
+        <script>
+
+            // 双方向通信用のサーバに接続
+            const socket = io();
+
+            // サーバへのデータ送信
+            const btn = document.getElementById('btn');   // ボタンを取得
+            btn.addEventListener('click', sendData);    // clickでsendDataを実行
+            function sendData() {           // データの送信処理
+                const txt = document.getElementById('txt');   // テキストボックスを取得
+                const val = txt.value;        // テキストボックスの値をvalに入れる
+                if (val == '') {            // valが空なら
+                    return;                 // 何もしないで抜ける
+                }
+                const data = {                // 送信するデータオブジェクトを作る
+                    text: val               // textというプロパティにvalを入れる
+                };
+                socket.emit('all', data);   // 'all'というイベント名でdataを送信
+                txt.value = '';             // テキストボックスを空にする
+            }
+
+            // サーバからのデータ受信
+            socket.on('msg', function(data) {   // 'msg'というイベント名のsocketが来たら
+                rcvData(data);                  // rcvDataを実行
+            });
+            function rcvData(data) {            // データの受信処理
+                const newMsg = document.createElement('div'); // 新規メッセージ要素の作成
+                newMsg.innerHTML = data.text;   // newMsgにdataのtextプロパティを入れる
+                const msgArea = document.getElementById('msgArea');   // 表示エリアを取得
+                msgArea.appendChild(newMsg);    // 表示エリアに子要素としてnewMsgを追加
+                const sound = new Audio();      // Audioオブジェクトを作る
+                sound.src = 'mokkin.mp3';       // src属性に効果音ファイルを指定
+                sound.play();                   // 効果音を再生
+            }
+
+        </script>
+    </body>
+</html>

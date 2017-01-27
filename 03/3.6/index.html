@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>3.6 Myカメラアプリ</title>
+    </head>
+    <body>
+        <video width='300' autoplay id='video'></video>
+        <canvas width='300' height='400' id='canvas'></canvas>
+        <script>
+            
+            // カメラとマイクを使う命令 navigator.mediaDevices.getUserMedia()
+            const media = navigator.mediaDevices.getUserMedia(
+                {
+                    video: true,    // カメラを使うか否か
+                    audio: false    // マイクを使うか否か
+                }
+            );
+            // メディアストリームの取得に成功したらonSuccess、失敗したらonErrorを実行
+            media.then(onSuccess, onError);
+            const video = document.getElementById('video');   // video要素を取得
+            // 成功時のonSuccess関数
+            function onSuccess(stream) {    // カメラ映像はstreamに入ってくる
+                // video要素のsrcに、streamをURL形式にしたものを入れる
+                video.src = window.URL.createObjectURL(stream);
+            }
+            // エラー時のonError関数
+            function onError(err) {         // エラー内容がerrに入ってくる
+                window.alert(err);          // 警告ダイアログにerrを表示
+            }
+
+            // 映像クリックでCanvasにキャプチャ
+            video.addEventListener('click', capImage);
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            // Canvasに画像を取り込むcapImage関数
+            function capImage() {
+                context.drawImage(video, 0, 0, 300, 400); // (video,X,Y,W,H)
+                // キャプチャした画像に日時を書く
+                const now = new Date();
+                const str = now.getFullYear() + '/'
+                          + now.getMonth() + '/'
+                          + now.getDate() + ' '
+                          + now.getHours() + ':'
+                          + now.getMinutes() +':'
+                          + now.getSeconds();
+                context.fillStyle = '#FFFFFF';      // 塗りつぶしの色
+                context.font = '32px sans-serif';   // サイズ、書体
+                context.fillText(str, 8, 32);       // fillText(text,X,Y)
+                context.strokeStyle = '#000000'     // テキストの外枠
+                context.strokeText(str, 8, 32);     // strokeText(text,X,Y)
+            }
+        </script>
+    </body>
+</html>

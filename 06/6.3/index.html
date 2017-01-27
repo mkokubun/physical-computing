@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>6.3 ぶるぶるチャット</title>
+    </head>
+
+    <body>
+        <!-- テキストボックスは削除しておきます-->
+        <input type='button' id='btn' value='送信'>  <!-- 送信ボタン -->
+        <div id='msgArea'></div>                    <!-- メッセージの表示エリア -->
+        <script src='/socket.io/socket.io.js'></script> <!-- socket.ioの読み込み -->
+
+        <script>
+            const socket = io();            // 双方向通信用のサーバに接続
+
+            // サーバへのデータ送信
+            const btn = document.getElementById('btn');   // ボタンを取得
+            btn.addEventListener('click', sendData);    // clickでsendDataを実行
+            function sendData() {           // データの送信処理
+                const data = {              // 送信するデータオブジェクトを作る
+                    time: 1000              // timeというプロパティに振動時間[ms]を設定
+                };
+                socket.emit('others', data);    // 'others'というイベントでdata送信
+            }
+
+            // サーバからのデータ受信
+            socket.on('msg', function(data) {   // 'msg'というイベントのsocketが来たら
+                receiveData(data);              // receiveDataを実行
+            });
+            function receiveData(data) {        // データの受信処理
+                const msgArea = document.getElementById('msgArea');
+                msgArea.innerHTML = 'こんにちは';  // msgAreaに表示
+                navigator.vibrate(data.time);   // 指定時間バイブレータを振動させる
+                window.setTimeout(function() {  // 指定時間後に何かをするsetTimeout
+                    msgArea.innerHTML = '';     // msgAreaを空白に
+                }, data.time);                  // data.time[ms]後に
+            }
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.1b 加速度を見える化</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+        <canvas width='300' height='300' id='canvas'></canvas>
+
+		<script>
+            // 加速度センサの値を得る devicemotion イベント
+            window.addEventListener('devicemotion', getData);
+            function getData(event) {
+                // 重力加速度 accelerationIncludingGravity [m/s^2]
+                // 地球の重力（1G）は約 9.8 m/s^2
+                const accX = event.accelerationIncludingGravity.x; // 左右
+                const accY = event.accelerationIncludingGravity.y; // 上下
+                const accZ = event.accelerationIncludingGravity.z; // 表裏
+                const msg = document.getElementById('msg');   // データ表示
+                msg.innerHTML = 'X: ' + accX + '<BR>' +
+                                'Y: ' + accY + '<BR>' +
+                                'Z: ' + accZ;
+                drawBall(accX, accY, accZ);     // ボールを描く
+            }
+
+            // ボール（円）をcanvasに描く（スマホの自動回転を切っておくとよい）
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const cX = canvas.width / 2;	// canvasの中心のX座標
+            const cY = canvas.height / 2;	// canvasの中心のY座標
+            const baseR = 50;				// Zが1Gの時のボールの半径
+            // canvasにボール（円）を描く関数drawBall
+            function drawBall(x, y, z) {
+                // canvasの内容を消すclearRect()
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                // 円を描く（arcの各引数の係数(15や3など)は現物合わせのテキトー）
+                context.beginPath();
+                context.arc(cX-x*15, cY+y*15, baseR-z*3, 0, 2*Math.PI);
+                context.fillStyle = '#000000';
+                context.fill();
+            }
+        </script>
+    </body>
+</html>

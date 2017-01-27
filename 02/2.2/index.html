@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>2.2 CSSで見た目を変える</title>
+        <style>
+            /* idがmsgの要素についてスタイルを設定 */
+            #msg {
+                font-family: arial,sans-serif;
+                font-size: 32px;
+                color: #FF0000;
+            }
+        </style>
+    </head>
+    <body>
+        <input type='range' min='8' max='64' step='1' value='32' id='sld'>
+        <input type='color' value='#FF0000' id='col'>
+        <br>
+        <div id='msg'>人間情報学部</div>
+        <script>
+            const msg = document.getElementById('msg');
+
+            const sld = document.getElementById('sld');
+            // イベント設定：sldにchangeが起きたら関数changeSizeを実行
+            sld.addEventListener('change', changeSize);
+            // サイズを変える関数changeSizeの定義
+            function changeSize() {
+                // msgに設定されているstyleの、fontSizeを変更
+                msg.style.fontSize = sld.value + 'px';
+            }
+
+            const col = document.getElementById('col');
+            // イベント設定：colにchangeが起きたら関数changeColorを実行
+            col.addEventListener('change', changeColor);
+            // 色を変える関数changeColorの定義
+            function changeColor() {
+                // msgに設定されているstyleの、colorを変更
+                msg.style.color = col.value;
+            }
+        </script>
+    </body>
+</html>

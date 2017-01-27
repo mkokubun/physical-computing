@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>5.2 外部CGモデルの読み込み</title>
+    </head>
+
+    <body>
+        <!-- 3D空間を表示させる場所としてのdiv要素 -->
+        <div id='screen'></div>
+
+        <!-- JavaScriptで3Dを扱うためのthree.jsライブラリの読み込み -->
+        <!-- http://threejs.org/ からDLしてindex.htmlとフォルダに配置 -->
+        <script src='three.js'></script>
+
+        <script>
+            // 描画する画面サイズを定義
+            const width = window.innerWidth;      // 画面の横幅（ウィンドウの横幅にする）
+            const height = window.innerHeight;    // 画面の高さ（ウィンドウの高さにする）
+
+            // シーン（3D空間）を作成（座標系は右手系Yアップ）
+            const scene = new THREE.Scene();
+            const axis = new THREE.AxisHelper(100);   // 座標軸オブジェクト（任意）
+            scene.add(axis);                        // 座標軸をシーンに追加（任意）
+
+            // シーンにカメラを置く
+            const fov = 60;                   // 画角(field of view)（度）
+            const aspect = width / height;    // アスペクト比
+            const near = 1;                   // ニアークリップ（これより近い領域を非表示）
+            const far = 1000;                 // ファークリップ（これより遠い領域を非表示）
+            const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);  // カメラを作成
+            camera.position.set(0, 0, 50);  // カメラの位置を指定
+            scene.add(camera);              // カメラを追加
+
+            // シーンに光源（照明）を置く
+            const light = new THREE.DirectionalLight(0xffffff);   // 光源を作成
+            light.position.set(0, 50, 50);  // 光源の位置を指定
+            scene.add(light);               // 光源を追加
+
+            // シーンに3DCGモデルを置く
+            let mesh;                                       // モデルを入れるオブジェクト
+            const loader = new THREE.JSONLoader();            // モデルを読む準備
+            loader.load('huchan.json', addModel);           // モデルを読み込む
+            function addModel(geometry, material) {         // 読み込み完了時呼ばれる関数
+                const faceMat = new THREE.MeshFaceMaterial(material); // 質感
+                mesh = new THREE.Mesh(geometry, faceMat);   // 3D物体を作成
+                mesh.position.set(0, 0, 0);                 // モデルを置く位置
+                mesh.scale.set(10, 10, 10);                 // モデルの大きさ（スケール）
+                scene.add(mesh);                            // モデルを追加
+            }
+
+            // レンダラ（3D空間を描画する機能）を準備
+            const renderer = new THREE.WebGLRenderer();       // レンダラを作成
+            renderer.setSize(width, height);                // レンダラのサイズを指定
+            renderer.setClearColor(0xEEEEEE, 1.0);          // 背景色と不透明度の設定
+            const screen = document.getElementById('screen'); // div要素を取得
+            screen.appendChild(renderer.domElement);        // div内にレンダラを置く
+
+            // レンダリング（描画）を繰り返し実行（アニメーション）する関数
+            function renderScene() {
+                mesh.rotation.y += 0.01;                    // y軸まわりに少し回す
+                mesh.rotation.x += 0.01;                    // x軸まわりに少し回す
+                renderer.render(scene, camera);             // レンダリングを実行
+            }
+
+            // レンダリング実行関数を一定間隔で繰り返し実行
+            window.setInterval(renderScene, 33);
+        </script>
+
+    </body>
+
+</html>

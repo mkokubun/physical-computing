@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>4.4a 近接センサ（Firefox限）</title>
+    </head>
+    <body>
+        <div id='msg'>ここにデータを表示</div>
+
+        <script>
+            // 近接センサの値を得る deviceproximity イベント
+            // Firefoxのみ対応（Chromeでは動かない）
+            window.addEventListener('deviceproximity', getData);
+            function getData(event) {
+                const prox = event.value;		// 距離 [近い=0 / 遠い=1]
+                const msg = document.getElementById('msg');   // データ表示
+                msg.innerHTML = prox;
+            }
+        </script>
+    </body>
+</html>

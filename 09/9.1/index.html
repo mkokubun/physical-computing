@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
+        <title>9.1 スマホで遠隔監視</title>
+    </head>
+    <body>
+        <!-- カメラ映像を表示するvideo、canvas、img要素（6.5を参照） -->
+        <video width='144' height='192' autoplay id='video'></video>
+        <canvas width='144' height='192' hidden='true' id='local'></canvas>
+        <img width='144' height='192' id='remote'>          <!-- 相手の映像 -->
+
+        <script src='/socket.io/socket.io.js'></script>     <!-- socket.io -->
+
+        <script>
+            const socket = io();    // 双方向通信用のサーバに接続
+
+            // サーボ制御
+            window.addEventListener('devicemotion', ctrlServo); // スマホで加速度を計測
+            function ctrlServo(event) {                         // サーボの制御処理
+                const accX = event.accelerationIncludingGravity.x;  // X軸加速度を計測
+                const servoAngle = 90 + Math.floor(accX) * 10;      // サーボ角度に換算
+                socket.emit('servo', {                  // 'servo'とういイベント名で
+                    angle: servoAngle                   // angle属性に角度を入れて送信
+                });
+            }
+
+            // カメラを使う（3.6や6.5を参照）
+            const media = navigator.mediaDevices.getUserMedia({
+                video: true,    // カメラを使うか否か
+                audio: false    // マイクを使うか否か
+            });
+            // メディアストリームの取得に成功したらonSuccess、失敗したらonErrorを実行
+            media.then(onSuccess, onError);
+            const video = document.getElementById('video'); // video要素を取得
+            function onSuccess(stream) {                    // 成功時のonSuccess関数
+                video.src = window.URL.createObjectURL(stream);  // video要素に映像取得
+                video.addEventListener('timeupdate', sendVideo); // 更新時sendVideo実行
+            }
+            function onError(err) {                         // エラー時のonError関数
+                window.alert(err);                          // ダイアログにerrを表示
+            }
+
+            // カメラの映像をキャプチャして送信（6.5を参照）
+            function sendVideo() {
+                const canvas = document.getElementById('local');
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, 144, 192);   // 映像をcanvasにキャプチャ
+                socket.emit('video', {                      // 'video'というイベントで
+                    pict: canvas.toDataURL()                // pict属性に画像を入れて送信
+                });
+            }
+
+            // サーバからの映像受信（6.5を参照）
+            socket.on('video', function (data) {    // 'video'というイベントで受信したら
+                showVideo(data);                    // showVideoを実行
+            });
+            function showVideo(data) {                      // 画像の表示処理
+                const remote = document.getElementById('remote');   // img要素を取得
+                remote.src = data.pict;                     // src属性に画像を設定
+            }
+        </script>
+    </body>
+</html>
